@@ -1,11 +1,17 @@
-From node:14
+From node:14 AS builder
 
 WORKDIR /app
 
 COPY . .
 
 RUN npm install
+RUN npm build
 
-EXPOSE 3000
+From nginx:alpine
 
-CMD ["npm","start"]
+WORKDIR /usr/share/nginx/html
+
+COPY --from=builder /app/build .
+
+CMD ["nginx", "-g", "daemon off;"]
+
